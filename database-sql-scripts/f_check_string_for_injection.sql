@@ -59,7 +59,7 @@ BEGIN
  
     ELSEIF (input_string like '%sysobjects%')  THEN SET ret_val=0;
     ELSEIF (input_string like '%syscolumns%')  THEN SET ret_val=0;
-	ELSEIF (input_string like '%1=1%')  THEN SET ret_val=0;
+	ELSEIF (input_string like '%=%')  THEN SET ret_val=0;
     ELSEIF (input_string like '%sys%')  THEN SET ret_val=0; 
 	END IF;
     
