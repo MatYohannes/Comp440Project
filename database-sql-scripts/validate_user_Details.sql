@@ -12,7 +12,7 @@
 */
 
 DELIMITER $$
-USE comp440_databse_project$$
+USE comp440_database_project$$
 DROP PROCEDURE IF EXISTS check_userDetails$$
 
 CREATE PROCEDURE check_userDetails (IN user_Name VARCHAR(30), 
@@ -38,7 +38,7 @@ BEGIN
     ELSE
         -- Check if the combination exists in the database
         SELECT IF(COUNT(distinct userName)  > 0, 'true', 'false') INTO userCount
-         FROM comp440_databse_project.userDetails
+         FROM comp440_database_project.userDetails
         WHERE (userName = var_userName OR user_emailID = var_userEmail)
           AND userPassword = var_userPswd;
           

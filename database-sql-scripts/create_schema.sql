@@ -5,5 +5,5 @@
     Updated On: 2023-10-07 15:07:55
 */
 
-CREATE DATABASE IF NOT EXISTS `comp440_databse_project`;
+CREATE DATABASE IF NOT EXISTS `comp440_database_project`;
 

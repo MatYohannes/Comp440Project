@@ -11,7 +11,7 @@
 
 */
 DELIMITER $$
-USE comp440_databse_project$$
+USE comp440_database_project$$
 DROP PROCEDURE IF EXISTS save_userDetails$$
 
 CREATE PROCEDURE save_userDetails ( IN userName VARCHAR(30), 
@@ -38,7 +38,7 @@ BEGIN
   
     CASE
     WHEN var_validationResult = 0 THEN 
-			INSERT INTO comp440_databse_project.userDetails (userName, userPassword,user_firstName,user_lastName,user_emailID)
+			INSERT INTO comp440_database_project.userDetails (userName, userPassword,user_firstName,user_lastName,user_emailID)
 					VALUES (userName,userPassword,user_firstName,user_lastName,user_emailID);
 			SET record_insertion_status = 'Record Inserted';
     WHEN var_validationResult = 1 THEN 

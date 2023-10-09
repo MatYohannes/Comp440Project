@@ -10,7 +10,7 @@
 */ 
 
 DELIMITER $$
-USE   comp440_databse_project$$
+USE   comp440_database_project$$
 DROP FUNCTION IF EXISTS f_check_string_for_injection$$
 
 CREATE FUNCTION f_check_string_for_injection (input_string VARCHAR(255)) 

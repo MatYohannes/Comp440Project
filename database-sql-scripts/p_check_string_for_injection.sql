@@ -12,7 +12,7 @@
 */
 
 DELIMITER $$
-USE  comp440_databse_project$$
+USE  comp440_database_project$$
 DROP PROCEDURE IF EXISTS p_check_string_for_injection$$
  
 
@@ -26,15 +26,15 @@ CREATE PROCEDURE p_check_string_for_injection (
 BEGIN
 	SET validationResult = 0;
     
-    IF ( comp440_databse_project.f_check_string_for_injection(userName) = 0)  THEN
+    IF ( comp440_database_project.f_check_string_for_injection(userName) = 0)  THEN
         SET validationResult = 1;
-    ELSEIF ( comp440_databse_project.f_check_string_for_injection(userPassword) = 0)  THEN
+    ELSEIF ( comp440_database_project.f_check_string_for_injection(userPassword) = 0)  THEN
 		SET validationResult = 2;
-	ELSEIF ( comp440_databse_project.f_check_string_for_injection(user_firstName) = 0)  THEN
+	ELSEIF ( comp440_database_project.f_check_string_for_injection(user_firstName) = 0)  THEN
 		SET validationResult = 3;
-	ELSEIF ( comp440_databse_project.f_check_string_for_injection(user_lastName) = 0)  THEN
+	ELSEIF ( comp440_database_project.f_check_string_for_injection(user_lastName) = 0)  THEN
 		SET validationResult = 4;
-	ELSEIF ( comp440_databse_project.f_check_string_for_injection(user_emailID) = 0)  THEN
+	ELSEIF ( comp440_database_project.f_check_string_for_injection(user_emailID) = 0)  THEN
 		SET validationResult = 5;
     END IF;
     
