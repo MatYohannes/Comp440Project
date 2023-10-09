@@ -133,13 +133,37 @@ positionRight = int(root.winfo_screenwidth() / 2 - windowWidth / 2)
 positionDown = int(root.winfo_screenheight() / 2 - windowHeight / 2)
 
 # Positions the window in the center of the page.
-root.geometry("350x300")
+root.geometry("400x300")
 root.geometry("+{}+{}".format(positionRight - 150, positionDown - 150))
 # Setting Grid Dimensions
 root.grid_rowconfigure(3, weight=1)
 root.grid_columnconfigure(4, weight=1)
 # Project Name
 businessName = "COMP 440 Database Project - Group 5"
+
+
+# Login Fucntion to enter system
+def loginF(uEntry, pEntry):
+    conn = create_db_connection()
+    p_name = "p_login_user"
+    #print(a.get())
+    OutResult = None
+    params = (uEntry, pEntry, OutResult)
+    # Check if username and password to login
+    # Validate username and password
+    returned_result = execute_query(conn, p_name, params)
+    returned_result_str = " ".join(returned_result[0])
+
+    if returned_result_str == "User Exists":
+        messagebox.showinfo(
+            message=f"Welcome {uEntry}!"
+        )
+    elif "User Password Mismatch." in returned_result_str:
+        messagebox.showinfo(
+            message="Password does not match. Try again"
+        )
+    else:
+        messagebox.showinfo("User Does Not Exist!")
 
 
 # Sign-Up Window
@@ -210,6 +234,9 @@ def signUp():
     global user_lastName
     global user_emailID
 
+    global userEntry
+    global passwordEntry
+
     # Sign Up Header
     tk.Label(signUpWindow, text="Please fill the following fields to Sign Up").grid(
         row=0, column=0
@@ -239,7 +266,7 @@ def signUp():
     tk.Button(signUpWindow, text="Submit user Account", command=signup_clicked).grid(
         row=7, column=0, columnspan=2, padx=5, pady=5, ipadx=75
     )
-    tk.Button(signUpWindow, text="Exit Program", command=signUpWindow.destroy).grid(
+    tk.Button(signUpWindow, text="Exit Program", command=signUpWindow.quit).grid(
         row=8, column=0, columnspan=2, padx=5, pady=10, ipadx=100
     )
 
@@ -258,13 +285,17 @@ tk.Label(root, text="Username").grid(row=1, column=0, padx=20, pady=10)
 # user_password
 tk.Label(root, text="Password").grid(row=2, column=0, padx=20)
 # login_button
-tk.Button(root, text="Login", height=2, width=8).grid(row=3, column=0, columnspan=2)
+tk.Button(root, text="Login", height=2, width=8,
+          command=lambda: loginF(userEntry.get(), passwordEntry.get())).grid(row=3, column=0, columnspan=2)
 # Signup_button
 tk.Button(root, text="Sign Up", height=2, width=8, command=signUp).grid(row=3, column=2)
 # input field for username
-tk.Entry(root, width=30).grid(row=1, column=1, columnspan=2)
+
+userEntry = tk.Entry(root, width=30)
+userEntry.grid(row=1, column=1, columnspan=2)
 # input field for password
-tk.Entry(root, width=30).grid(row=2, column=1, columnspan=2)
+passwordEntry = tk.Entry(root, width=30)
+passwordEntry.grid(row=2, column=1, columnspan=2)
 
 # Add a button to trigger fetching and displaying user details
 Button(
