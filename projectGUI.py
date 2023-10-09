@@ -10,9 +10,11 @@ database = "comp440_database_project"
 user = "root"
 password = ""  # enter password
 
+
 def onClose():
     root.destroy()
     root.mainloop()
+
 
 # Function to create a database connection
 def create_db_connection():
@@ -61,7 +63,7 @@ def execute_query(conn, query, data=None) -> any:
     except mysql.connector.Error as err:
         if str(err).find('userdetails.PRIMARY'):
             messagebox.showinfo(title="Error", message="Please enter unique username and/or email address. Try again")
-        #messagebox.showerror("Database Error", f"Error: {err}")
+        # messagebox.showerror("Database Error", f"Error: {err}")
         return False
 
 
@@ -147,12 +149,11 @@ root.grid_columnconfigure(4, weight=1)
 businessName = "COMP 440 Database Project - Group 5"
 
 
-
 # Login Fucntion to enter system
 def loginF(uEntry, pEntry):
     conn = create_db_connection()
     p_name = "p_login_user"
-    #print(a.get())
+    # print(a.get())
     OutResult = None
     params = (uEntry, pEntry, OutResult)
     # Check if username and password to login
@@ -175,6 +176,7 @@ def loginF(uEntry, pEntry):
 # Sign-Up Window
 def signUp():
     root.destroy()
+
     def signup_clicked():
         user_name = userName.get()
         user_password = userPassword.get()
@@ -230,9 +232,6 @@ def signUp():
 
         conn.close()
 
-
-
-
     signUpWindow = tk.Tk()
     signUpWindow.title("Sign Up")
     # The dimensions of the window
@@ -284,7 +283,7 @@ def signUp():
     tk.Button(signUpWindow, text="Submit user Account", command=signup_clicked).grid(
         row=7, column=0, columnspan=2, padx=5, pady=5, ipadx=75
     )
-   # tk.Button(signUpWindow, text="Back", command=lambda: root.onClose()).grid(row=9, column=0)
+    # tk.Button(signUpWindow, text="Back", command=lambda: root.onClose()).grid(row=9, column=0)
     tk.Button(signUpWindow, text="Exit Program", command=signUpWindow.quit).grid(
         row=8, column=0, columnspan=2, padx=5, pady=10, ipadx=100
     )
