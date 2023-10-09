@@ -8,7 +8,7 @@ import re
 host = "localhost"
 database = "comp440_database_project"
 user = "root"
-password = ""  # enter password
+password = "Tsaran.203138097"  # enter password
 
 
 # Function to create a database connection
