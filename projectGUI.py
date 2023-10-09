@@ -11,6 +11,11 @@ user = "root"
 password = ""  # enter password
 
 
+def onClose():
+    root.destroy()
+    root.mainloop()
+
+
 # Function to create a database connection
 def create_db_connection():
     try:
@@ -56,7 +61,9 @@ def execute_query(conn, query, data=None) -> any:
         return outResult
 
     except mysql.connector.Error as err:
-        messagebox.showerror("Database Error", f"Error: {err}")
+        if str(err).find('userdetails.PRIMARY'):
+            messagebox.showinfo(title="Error", message="Please enter unique username and/or email address. Try again")
+        # messagebox.showerror("Database Error", f"Error: {err}")
         return False
 
 
@@ -146,7 +153,7 @@ businessName = "COMP 440 Database Project - Group 5"
 def loginF(uEntry, pEntry):
     conn = create_db_connection()
     p_name = "p_login_user"
-    #print(a.get())
+    # print(a.get())
     OutResult = None
     params = (uEntry, pEntry, OutResult)
     # Check if username and password to login
@@ -163,11 +170,13 @@ def loginF(uEntry, pEntry):
             message="Password does not match. Try again"
         )
     else:
-        messagebox.showinfo("User Does Not Exist!")
+        messagebox.showinfo(title="Error", message="User Does Not Exist!")
 
 
 # Sign-Up Window
 def signUp():
+    root.destroy()
+
     def signup_clicked():
         user_name = userName.get()
         user_password = userPassword.get()
@@ -175,6 +184,10 @@ def signUp():
         user_last_name = user_lastName.get()
         user_emailid = user_emailID.get()
         outResult = None
+
+        if userPaswordConfirmation.get() != userPassword.get():
+            messagebox.showwarning(title="Error", message="Passwords do not match. Try again")
+            return
 
         # Validate the username and email for SQL injection
         if not is_safe_input(user_name) or not is_safe_input(user_emailid):
@@ -230,6 +243,7 @@ def signUp():
     # Variables are global for use with functions
     global userName
     global userPassword
+    global userPaswordConfirmation
     global user_firstName
     global user_lastName
     global user_emailID
@@ -245,27 +259,31 @@ def signUp():
     # Create Text Boxes
     userName = tk.Entry(signUpWindow, width=30)
     userPassword = tk.Entry(signUpWindow, width=30)
+    userPaswordConfirmation = tk.Entry(signUpWindow, width=30)
     user_firstName = tk.Entry(signUpWindow, width=30)
     user_lastName = tk.Entry(signUpWindow, width=30)
     user_emailID = tk.Entry(signUpWindow, width=30)
 
     userName.grid(row=1, column=1, padx=20, pady=(10, 0))
     userPassword.grid(row=2, column=1)
-    user_firstName.grid(row=3, column=1)
-    user_lastName.grid(row=4, column=1)
-    user_emailID.grid(row=5, column=1)
+    userPaswordConfirmation.grid(row=3, column=1)
+    user_firstName.grid(row=4, column=1)
+    user_lastName.grid(row=5, column=1)
+    user_emailID.grid(row=6, column=1)
 
     # Create text box labels
     tk.Label(signUpWindow, text="User Name").grid(row=1, column=0, pady=(10, 0))
     tk.Label(signUpWindow, text="Password").grid(row=2, column=0)
-    tk.Label(signUpWindow, text="First Name").grid(row=3, column=0)
-    tk.Label(signUpWindow, text="Last Name").grid(row=4, column=0)
-    tk.Label(signUpWindow, text="Email ID").grid(row=5, column=0)
+    tk.Label(signUpWindow, text="Confirm Password").grid(row=3, column=0)
+    tk.Label(signUpWindow, text="First Name").grid(row=4, column=0)
+    tk.Label(signUpWindow, text="Last Name").grid(row=5, column=0)
+    tk.Label(signUpWindow, text="Email ID").grid(row=6, column=0)
 
     # Create a Save Button to Save edited Record
     tk.Button(signUpWindow, text="Submit user Account", command=signup_clicked).grid(
         row=7, column=0, columnspan=2, padx=5, pady=5, ipadx=75
     )
+    # tk.Button(signUpWindow, text="Back", command=lambda: root.onClose()).grid(row=9, column=0)
     tk.Button(signUpWindow, text="Exit Program", command=signUpWindow.quit).grid(
         row=8, column=0, columnspan=2, padx=5, pady=10, ipadx=100
     )
