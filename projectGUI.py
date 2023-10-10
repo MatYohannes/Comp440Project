@@ -142,7 +142,7 @@ positionRight = int(root.winfo_screenwidth() / 2 - windowWidth / 2)
 positionDown = int(root.winfo_screenheight() / 2 - windowHeight / 2)
 
 # Positions the window in the center of the page.
-root.geometry("400x300")
+root.geometry("500x400")
 root.geometry("+{}+{}".format(positionRight - 150, positionDown - 150))
 # Setting Grid Dimensions
 root.grid_rowconfigure(3, weight=1)
@@ -237,7 +237,7 @@ def signUp():
     signUpWindow = tk.Tk()
     signUpWindow.title("Sign Up")
     # The dimensions of the window
-    signUpWindow.geometry("450x250+510+100")
+    signUpWindow.geometry("650x350+510+100")
     # Centering the Sign Up Window
     signUpWindow.geometry("+{}+{}".format(positionRight - 150, positionDown - 150))
 
