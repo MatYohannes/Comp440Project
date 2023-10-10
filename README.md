@@ -13,6 +13,12 @@ Pre-requisites include a Python IDE such as PyCharm and MySQL Workbench
 URL to our Phase I demo: 
 Source Code can be found under our GitHub Repository : GitHub Repository for Phase 1 of Comp440Project - Group 6
 
+IMPORTANT:
+To run on mySQL, please input our mySQL user and password in file:
+projectGUI.py
+line 12 for user
+line 13 for password
+
 YouTube link:
 https://youtu.be/zIQt0RxRbIE
 
