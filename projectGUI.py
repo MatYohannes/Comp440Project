@@ -3,6 +3,8 @@ from tkinter import Button, messagebox
 # from argon2 import Parameters
 import mysql.connector
 import re
+from PIL import ImageTk
+
 
 # Define your MySQL database connection parameters
 host = "localhost"
@@ -258,8 +260,8 @@ def signUp():
 
     # Create Text Boxes
     userName = tk.Entry(signUpWindow, width=30)
-    userPassword = tk.Entry(signUpWindow, width=30)
-    userPaswordConfirmation = tk.Entry(signUpWindow, width=30)
+    userPassword = tk.Entry(signUpWindow, width=30, show="*")
+    userPaswordConfirmation = tk.Entry(signUpWindow, width=30, show="*")
     user_firstName = tk.Entry(signUpWindow, width=30)
     user_lastName = tk.Entry(signUpWindow, width=30)
     user_emailID = tk.Entry(signUpWindow, width=30)
@@ -311,8 +313,26 @@ tk.Button(root, text="Sign Up", height=2, width=8, command=signUp).grid(row=3, c
 
 userEntry = tk.Entry(root, width=30)
 userEntry.grid(row=1, column=1, columnspan=2)
+#
+# def show():
+#     hideButton = Button(root, image=hideImage, show=hide, activebackground='white', bd=0, background='white')
+#     hideButton.grid(row=1, column=1)
+#
+# def hide():
+#     showButton = Button(root, image=showImage, command=show, activebackground='white', bd=0, background='white')
+#     showButton.grid(row=1, column=1)
+#
+#
+# showImage = ImageTk.PhotoImage(file='Images/show.png')
+# # image password button
+# hideImage = ImageTk.PhotoImage(file='Images/hide.png')
+#
+# # show password button
+# showButton = Button(root, image=show, command=show, activebackground='white', bd=0, background='white')
+# showButton.grid(row=2, column=2)
+
 # input field for password
-passwordEntry = tk.Entry(root, width=30)
+passwordEntry = tk.Entry(root, width=30, show="*")
 passwordEntry.grid(row=2, column=1, columnspan=2)
 
 # Add a button to trigger fetching and displaying user details
