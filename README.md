@@ -11,7 +11,8 @@ Our project utilizes Python Tkinter along with MySQL database for building a GUI
 Pre-requisites include a Python IDE such as PyCharm and MySQL Workbench 
 
 URL to our Phase I demo: 
-Source Code can be found under our GitHub Repository : GitHub Repository for Phase 1 of Comp440Project - Group 6
+Source Code can be found under our GitHub Repository : https://github.com/MatYohannes/Comp440Project
+
 
 IMPORTANT:
 To run on mySQL, please input our mySQL user and password in file:
