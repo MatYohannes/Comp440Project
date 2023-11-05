@@ -16,8 +16,16 @@ DROP PROCEDURE IF EXISTS p_display_AllItemsPresent$$
 
 CREATE PROCEDURE p_display_AllItemsPresent ()
 BEGIN
-	SELECT itemTitle 'Item Title', itemDescription 'Item Description', itemCategory 'Item Category' , itemPrice 'Price' , DateofListing as 'Listed On'
-	  FROM  itemDetails;
+	SELECT itd.itemTitle 'Item Title', 
+			itd.itemDescription 'Item Description', 
+			itd.itemCategory 'Item Category' , 
+			itd.itemPrice 'Price' , 
+            itd.DateofListing as 'Listed On',
+            rev.userReview 'User Review',
+            rev.userReviewDescription 'Review Description'
+	  FROM  itemDetails itd
+	LEFT JOIN userReviews rev
+		on rev.itemID = itd.itemID;
     
 END$$
 DELIMITER ;

@@ -27,37 +27,54 @@ BEGIN
   DECLARE review_count INT;
   DECLARE user_item_count INT;
   DECLARE reviewed_item_ID INT;
+  DECLARE user_created_item INT;
   
-  -- Check if the user has already reviewed 3 items today
-  SELECT COUNT(*) INTO user_item_count
-  FROM userReviews 
-  WHERE userName  = ReviewerUserName
-    AND DateofReview  = userReviewDate;
-     
-    
-  -- If user has reviewed their own item or exceeded daily review limit, exit
-  IF user_item_count >= 3 THEN 
-    SET output_message = 'Cannot exceed daily review limit of 3';
-    
-  ELSE
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION  
+        BEGIN
+          SET output_message = 'Check Constraint Violation. Can only have review as Excellent/Good/Fair/Poor';
+        END;
   
-	 select itemID into reviewed_item_ID
-       from itemDetails
-      where itemTitle = selectedItemTitle;
-	
-    -- Insert the review into the reviews table
-     INSERT INTO `comp440_database_project`.`userReviews` (`itemID`,
-															`userReview`,
-															`userReviewDescription`,
-															`userName`,
-															`DateofReview`)
-		 VALUES (reviewed_item_ID, userReview, userReviewDescription, ReviewerUserName , userReviewDate);
-	
-     SET output_message = 'Review Inserted Successfully.';
-         
+  -- Check if the user created the item
+  SELECT COUNT(*) INTO user_created_item
+	FROM itemDetails 
+	WHERE userName = ReviewerUserName
+	AND itemTitle = selectedItemTitle;
+
+  IF user_created_item > 0 then 
+		SET output_message = 'Cannot Add a review to the Item created by you';
+  ELSE   
+	 
+     -- Check if the user has already reviewed 3 items today
+	  SELECT COUNT(*) INTO user_item_count
+		FROM userReviews 
+	   WHERE userName  = ReviewerUserName
+		 AND DateofReview  = userReviewDate;
+		 
+	  -- If user has reviewed their own item or exceeded daily review limit, exit
+	  IF user_item_count >= 3 THEN 
+		 SET output_message = 'Cannot exceed daily review limit of 3';
+		
+	  ELSE
+		BEGIN
+        
+			 SELECT itemID INTO reviewed_item_ID
+			   FROM itemDetails
+			  WHERE itemTitle = selectedItemTitle;
+			  
+			-- Insert the review into the reviews table
+			 INSERT INTO `comp440_database_project`.`userReviews` (`itemID`,
+																	`userReview`,
+																	`userReviewDescription`,
+																	`userName`,
+																	`DateofReview`)
+				 VALUES (reviewed_item_ID, userReview, userReviewDescription, ReviewerUserName , userReviewDate);
+                 
+				 SET output_message = 'Review Inserted Successfully';
+         END; 
+	  END IF;
   END IF;
   
-		SELECT output_message;
+     select output_message;
 END$$
 
 DELIMITER ;
