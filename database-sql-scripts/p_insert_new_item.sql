@@ -6,7 +6,8 @@
     Updated On:  2023-11-04 15:48:06
     
     execution statement example: 
-			call p_insert_new_item( current_userName,   itemTitle,  itemDescription ,   itemCategory,   itemPrice  ,  item_listingDate);
+			call p_insert_new_item( current_userName,   itemTitle,  itemDescription ,   itemCategory,   itemPrice  ,  item_listingDate, @output_message);
+            select @output_message;
 
 */ 
 
@@ -21,7 +22,8 @@ CREATE PROCEDURE p_insert_new_item(
   IN itemDescription VARCHAR(500),  
   IN itemCategory VARCHAR(255),  
   IN itemPrice DECIMAL(10, 2) ,
-  IN item_listingDate DATE
+  IN item_listingDate DATE,
+  OUT result_message  VARCHAR(255)
 )
 BEGIN
   DECLARE today_items INT;
@@ -34,15 +36,25 @@ BEGIN
     AND DateofListing = item_listingDate;
 
   -- Check if the user has already posted 3 items today
-  IF today_items > 3 THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'You can only post 3 items a day';
+  IF today_items >= 3 THEN
+     set result_message =  'You can only post 3 items a day';
     
   ELSE
     -- Insert the new item into the database
-    INSERT INTO itemDetails 
+   INSERT INTO `comp440_database_project`.`itemDetails`(`itemTitle`,
+														`itemDescription`,
+														`itemCategory`,
+														`itemPrice`,
+														`userName`,
+														`DateofListing`)
 		 VALUES (itemTitle, itemDescription , itemCategory, itemPrice, current_userName, item_listingDate);
+	
+     set result_message =  'Item Inserted';
+    
   END IF;
+  
+	select result_message;
+    
 END $$
 
 DELIMITER ;

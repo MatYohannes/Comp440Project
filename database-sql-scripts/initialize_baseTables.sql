@@ -5,7 +5,8 @@
     Updated On:  2023-11-04 15:48:06
     
     execution statement example: 
-			call initialize_baseTables ();
+			call initialize_baseTables (@output_message);
+            select @output_message;
 
 */ 
 
@@ -13,7 +14,7 @@ DELIMITER $$
 USE comp440_database_project$$
 DROP PROCEDURE IF EXISTS initialize_baseTables$$
 
-CREATE PROCEDURE initialize_baseTables ()
+CREATE PROCEDURE initialize_baseTables (OUT output_message varchar(255))
 BEGIN
    
     
@@ -34,6 +35,10 @@ BEGIN
 	
 	
 	Call p_insert_to_initialize_baseTables();
+    
+    SET output_message = 'Database Initialized';
+    
+    select output_message;
 	      
 END$$
 DELIMITER ; 
