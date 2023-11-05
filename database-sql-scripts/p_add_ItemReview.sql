@@ -17,7 +17,7 @@ DROP PROCEDURE IF EXISTS p_add_ItemReview$$
 CREATE PROCEDURE p_add_ItemReview(
   IN selectedItemTitle varchar(255),               
   IN userReview VARCHAR(255), 
-  IN userReviewDescription TEXT  ,
+  IN userReviewDescription VARCHAR(500)  ,
   IN userReviewDate DATE,
   IN ReviewerUserName varchar(30)
 )

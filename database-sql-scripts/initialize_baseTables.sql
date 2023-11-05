@@ -24,32 +24,16 @@ BEGIN
         user_lastName NVARCHAR(128),
         user_emailID NVARCHAR(320) UNIQUE        
 		);
-	 
+        
+	-- drop fk constraints and tables
+    ALTER TABLE itemDetails  DROP CONSTRAINT  `itemdetails_ibfk_1`; 
+	ALTER TABLE userReviews DROP CONSTRAINT  `userreviews_ibfk_1`; 
+    ALTER TABLE userReviews DROP CONSTRAINT `userreviews_ibfk_2`; 
+    DROP TABLE `itemDetails`;
+	DROP TABLE `userReviews`;
 	
-    
-	CREATE TABLE IF NOT EXISTS `itemDetails`(
-		itemID INT AUTO_INCREMENT PRIMARY KEY, 
-		itemTitle VARCHAR(255),   
-        itemDescription TEXT, 
-        itemCategory VARCHAR(255),  
-        itemPrice DECIMAL(10, 2),
-        userName varchar(30),
-        DateofListing date,
-		foreign key (userName) references  userDetails(userName)        
-		);
-        
-        
-	CREATE TABLE IF NOT EXISTS `userReviews`(
-		reviewID INT AUTO_INCREMENT PRIMARY KEY, 
-		itemID INT,
-        userReview VARCHAR(255),   
-        userReviewDescription TEXT,  
-        userName varchar(30),
-        DateofReview date,
-		foreign key (userName) references userDetails(userName),
-        foreign key (itemID) references itemDetails(itemID),
-		CONSTRAINT chk_userReview CHECK (userReview IN ('Excellent', 'Good', 'Fair', 'Poor'))
-		);
+	
+	Call p_insert_to_initialize_baseTables();
 	      
 END$$
 DELIMITER ; 

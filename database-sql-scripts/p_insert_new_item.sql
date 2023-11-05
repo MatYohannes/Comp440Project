@@ -18,7 +18,7 @@ DROP PROCEDURE IF EXISTS p_insert_new_item$$
 CREATE PROCEDURE p_insert_new_item(
   IN current_userName varchar(30),  
   IN itemTitle VARCHAR(255),  
-  IN itemDescription TEXT,  
+  IN itemDescription VARCHAR(500),  
   IN itemCategory VARCHAR(255),  
   IN itemPrice DECIMAL(10, 2) ,
   IN item_listingDate DATE
