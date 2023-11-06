@@ -20,7 +20,12 @@ projectGUI.py
 line 12 for user
 line 13 for password
 
-YouTube link:
-https://youtu.be/zIQt0RxRbIE
+Phase 2
+
+Added new feature for insert new item
+Added new feature for review item
+Added new feature to search by category
+Added new feature Initialize Database
+
 
 
