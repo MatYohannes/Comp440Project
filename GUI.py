@@ -17,7 +17,7 @@ listingDate = date.strftime("%Y-%m-%d")
 
 
 def initializeDB():
-   None
+    messagebox.showinfo(title="Success", message="Database initialized!")
 
 
 def GUI2():
@@ -224,8 +224,6 @@ def GUI3():
     insertPage.mainloop()
 
 
-
-
 def displayAllItems():
     conn = create_db_connection()
     if conn:
@@ -262,7 +260,6 @@ def GUI4():
         searchWindow.destroy()
         GUI5()
 
-
     searchPage = Frame(searchWindow)
     searchPage.grid(row=0, column=0, sticky='nsew')
 
@@ -280,7 +277,7 @@ def GUI4():
     searchDisplay['show'] = 'headings'
     # Define number of columns
     searchDisplay['columns'] = (
-    'ItemID', 'itemTitle', 'itemDescription', 'itemCategory', 'itemPrice', 'userName', 'DateofListing')
+        'ItemID', 'itemTitle', 'itemDescription', 'itemCategory', 'itemPrice', 'userName', 'DateofListing')
 
     # Assign dimensions
     searchDisplay.column("ItemID", width=120, minwidth=50, anchor=W)
@@ -301,19 +298,16 @@ def GUI4():
     searchDisplay.heading("DateofListing", text="Created Date", anchor=W)
 
 
-
-    searchDisplay.bind('<ButtonRelease-1>', select_item)
-
+    #def select_item(searchDisplay, event):
 
 
+    #searchDisplay.bind('<ButtonRelease-1>', select_item)
 
     i = 0
     for ro in connSearchDisplay:
         # print(ro)
         searchDisplay.insert("", i, text="", values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5], ro[6]))
         i = i + 1
-
-
 
     searchDisplay.place(x=0, y=0)
     searchTitleLabel = Label(designFrame1, text='Search Items by Category', font=('Arial', 30, 'bold'), bg='#2095e9')
@@ -331,8 +325,8 @@ def GUI4():
     searchButton.place(x=600, y=150)
 
     addReviewButton2 = Button(designFrame1, text='Add Review', font=("yu gothic ui bold", 12),
-                           bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
-                           cursor='hand2', height=2, width=20, command=lambda: addReview())  # add parameters
+                              bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
+                              cursor='hand2', height=2, width=20, command=lambda: addReview())  # add parameters
     addReviewButton2.place(x=1000, y=270)
 
     backButton = Button(designFrame1, text='Back to Portal', font=("yu gothic ui bold", 12),
@@ -372,7 +366,8 @@ def GUI4():
         designFrame4 = Listbox(searchWinPopup, bg='#0c71b9', width=190, height=21, highlightthickness=0, borderwidth=0)
         designFrame4.place(x=0, y=75)
 
-        SearchPopupTitle = Label(designFrame3, text='Categories: ' + cat.capitalize(), font=('Arial', 25, 'bold'), bg='#2095e9')
+        SearchPopupTitle = Label(designFrame3, text='Categories: ' + cat.capitalize(), font=('Arial', 25, 'bold'),
+                                 bg='#2095e9')
         SearchPopupTitle.place(x=80, y=15)
 
         backButtonPopUp = Button(designFrame3, text='Back', font=("yu gothic ui bold", 12),
@@ -789,7 +784,7 @@ loginLine.place(x=840, y=203)
 # ==== LOGIN  down button ============
 loginBtn1 = Button(designFrame4, fg='#f8f8f8', text='Login', bg='#1b87d2', font=("yu gothic ui bold", 15),
                    cursor='hand2', activebackground='#1b87d2',
-                   command=lambda: loginF(userNameEntryL.get(),passwordEntry1.get()))
+                   command=lambda: loginF(userNameEntryL.get(), passwordEntry1.get()))
 loginBtn1.place(x=133, y=340, width=256, height=50)
 
 # ======= ICONS =================
