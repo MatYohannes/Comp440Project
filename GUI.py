@@ -11,7 +11,7 @@ import datetime
 host = "localhost"
 database = "comp440_database_project"
 user = "root"
-password = "Wolverine99$$"  # enter password
+password = "$$"  # enter password
 date = datetime.datetime.now()
 listingDate = date.strftime("%Y-%m-%d")
 
