@@ -11,9 +11,64 @@ import datetime
 host = "localhost"
 database = "comp440_database_project"
 user = "root"
-password = ""  # enter password
+password = "Wolverine99$$"  # enter password
 date = datetime.datetime.now()
 listingDate = date.strftime("%Y-%m-%d")
+
+
+class reviewedObject:
+    def __init__(self, reviewProductID, reviewProductName, reviewProductDescription,
+                 reviewProductCategory, reviewProductPrice, reviewCreator, reviewCreatedDate):
+        self.reviewProductID = reviewProductID
+        self.reviewProductName = reviewProductName
+        self.reviewProductDescription = reviewProductDescription
+        self.reviewProductCategory = reviewProductCategory
+        self.reviewProductPrice = reviewProductPrice
+        self.reviewCreator = reviewCreator
+        self.reviewCreatedDate = reviewCreatedDate
+
+    def getReviewProductID(self):
+        return self.reviewProductID
+
+    def getReviewProductName(self):
+        return self.reviewProductName
+
+    def getReviewProductionDescription(self):
+        return self.reviewProductDescription
+
+    def getReviewProductCategory(self):
+        return self.reviewProductCategory
+
+    def getReviewProductPrice(self):
+        return self.reviewProductPrice
+
+    def getReviewCreator(self):
+        return self.reviewCreator
+
+    def getReviewCreatedDate(self):
+        return self.reviewCreatedDate
+
+    ##
+    def setReviewProductID(self, value):
+        self.reviewProductID = value
+
+    def setReviewProductName(self, value):
+        self.reviewProductName = value
+
+    def setReviewProductionDescription(self, value):
+        self.reviewProductDescription = value
+
+    def setReviewProductCategory(self, value):
+        self.reviewProductCategory = value
+
+    def setReviewProductPrice(self, value):
+        self.reviewProductPrice = value
+
+    def setReviewCreator(self, value):
+        self.reviewCreator = value
+
+    def setReviewCreatedDate(self, value):
+        self.reviewCreatedDate = value
 
 
 def initializeDB():
@@ -121,7 +176,7 @@ def insertItemF(title, description, category, price):
 
             query = procedure_name
             returned_result = execute_query(conn, query, params)
-            print(returned_result)
+            # print(returned_result)
             returned_result_str = " ".join(returned_result[0])
 
             if returned_result_str == "Item Inserted":
@@ -256,9 +311,26 @@ def GUI4():
         searchWindow.destroy()
         GUI2()
 
-    def addReview():
+    def addReviewF(obj):
         searchWindow.destroy()
         GUI5()
+
+    def getSelectItem():
+        selectedItem = searchDisplay.focus()
+        details = searchDisplay.item(selectedItem)
+        product = details.get("values")
+        productId = product[0]
+        productName = product[1]
+        productDescription = product[2]
+        productCategories = product[3]
+        productPrice = product[4]
+        productCreator = product[5]
+        productDate = product[6]
+
+        reviewObject = reviewedObject(productId, productName, productDescription, productCategories,
+                                      productPrice, productCreator, productDate)
+        searchWindow.destroy()
+        GUI5(reviewObject)
 
     searchPage = Frame(searchWindow)
     searchPage.grid(row=0, column=0, sticky='nsew')
@@ -273,7 +345,7 @@ def GUI4():
     connect = create_db_connection()
     connSearchDisplay = connect.cursor()
     connSearchDisplay.execute("SELECT * FROM comp440_database_project.itemdetails;")
-    searchDisplay = ttk.Treeview(searchBoxDisplay)
+    searchDisplay = ttk.Treeview(searchBoxDisplay, selectmode=BROWSE)
     searchDisplay['show'] = 'headings'
     # Define number of columns
     searchDisplay['columns'] = (
@@ -297,12 +369,6 @@ def GUI4():
     searchDisplay.heading("userName", text="Added By", anchor=W)
     searchDisplay.heading("DateofListing", text="Created Date", anchor=W)
 
-
-    #def select_item(searchDisplay, event):
-
-
-    #searchDisplay.bind('<ButtonRelease-1>', select_item)
-
     i = 0
     for ro in connSearchDisplay:
         # print(ro)
@@ -324,10 +390,11 @@ def GUI4():
                           command=lambda: searchItem(categoryEntry.get()))  # add parameters
     searchButton.place(x=600, y=150)
 
-    addReviewButton2 = Button(designFrame1, text='Add Review', font=("yu gothic ui bold", 12),
-                              bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
-                              cursor='hand2', height=2, width=20, command=lambda: addReview())  # add parameters
-    addReviewButton2.place(x=1000, y=270)
+    reviewSelectedButton2 = Button(designFrame1, text='Review Item', font=("yu gothic ui bold", 12),
+                                   bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
+                                   cursor='hand2', height=2, width=20,
+                                   command=lambda: getSelectItem())  # add parameters
+    reviewSelectedButton2.place(x=800, y=270)
 
     backButton = Button(designFrame1, text='Back to Portal', font=("yu gothic ui bold", 12),
                         bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
@@ -385,7 +452,7 @@ def GUI4():
         returned_result = execute_query(conn, query, params)
 
         # Displaying table
-        categorySearchDisplay = ttk.Treeview(designFrame4)
+        categorySearchDisplay = ttk.Treeview(designFrame4, selectmode=BROWSE)
         categorySearchDisplay['show'] = 'headings'
         # Define number of columns
         categorySearchDisplay['columns'] = ('itemCategory', 'itemTitle', 'itemDescription', 'itemPrice')
@@ -411,7 +478,7 @@ def GUI4():
     searchWindow.mainloop()
 
 
-def GUI5():
+def GUI5(object):
     viewItemWindow = Tk()
     viewItemWindow.rowconfigure(0, weight=1)
     viewItemWindow.columnconfigure(0, weight=1)
@@ -435,44 +502,50 @@ def GUI5():
     designFrame2 = Listbox(viewPage, bg='#1e85d0', width=190, height=23, highlightthickness=0, borderwidth=0)
     designFrame2.place(x=75, y=350)
 
-    itemNameReturnedValue = "Temp"
+    selectedReviewProductID = object.getReviewProductID()
+    selectedReviewProductName = object.getReviewProductName()
+    selectedReviewProductDescription = object.getReviewProductionDescription()
+    selectedReviewProductCategory = object.getReviewProductCategory()
+    selectedReviewProductPrice = object.getReviewProductPrice()
+    selectedReviewCreator = object.getReviewCreator()
+    selectedReviewDate = object.getReviewCreatedDate()
 
-    ItemNameLabel = Label(designFrame1, text=itemNameReturnedValue, font=('Arial', 30, 'bold'), bg='#2095e9')
+    ItemNameLabel = Label(designFrame1, text=selectedReviewProductName, font=('Arial', 30, 'bold'), bg='#2095e9')
     ItemNameLabel.place(x=130, y=20)
 
-    categoryReturnedValue = ""
     categoryLabel = Label(designFrame1, text='Category:', fg="#f8f8f8", bg='#1e85d0', font=("yu gothic ui", 14, 'bold'))
     categoryLabel.place(x=100, y=100)
     categoryReturnLabel = Text(designFrame1, height=2, width=40)
-    categoryReturnLabel.insert(END, categoryReturnedValue)
+    categoryReturnLabel.insert(END, selectedReviewProductCategory)
+    categoryReturnLabel.config(state=DISABLED)
     categoryReturnLabel.place(x=100, y=140)
 
-    descriptionReturnedValue = ""
     categoryLabel = Label(designFrame1, text='Description:', fg="#f8f8f8", bg='#1e85d0',
                           font=("yu gothic ui", 14, 'bold'))
     categoryLabel.place(x=100, y=200)
     categoryReturnLabel = Text(designFrame1, height=2, width=40)
-    categoryReturnLabel.insert(END, descriptionReturnedValue)
+    categoryReturnLabel.insert(END, selectedReviewProductDescription)
+    categoryReturnLabel.config(state=DISABLED)
     categoryReturnLabel.place(x=100, y=250)
 
-    priceReturnedValue = ""
     priceLabel = Label(designFrame1, text='Price:', fg="#f8f8f8", bg='#1e85d0', font=("yu gothic ui", 14, 'bold'))
     priceLabel.place(x=500, y=100)
     priceReturnedLabel = Text(designFrame1, height=2, width=40)
-    priceReturnedLabel.insert(END, priceReturnedValue)
+    priceReturnedLabel.insert(END, selectedReviewProductPrice)
+    priceReturnedLabel.config(state=DISABLED)
     priceReturnedLabel.place(x=500, y=140)
 
-    createDateReturnedValue = ""
     createDateLabel = Label(designFrame1, text='Created Date:', fg="#f8f8f8", bg='#1e85d0',
                             font=("yu gothic ui", 14, 'bold'))
     createDateLabel.place(x=500, y=200)
     createDateReturnedLabel = Text(designFrame1, height=2, width=40)
-    createDateReturnedLabel.insert(END, createDateReturnedValue)
+    createDateReturnedLabel.insert(END, selectedReviewDate)
+    createDateReturnedLabel.config(state=DISABLED)
     createDateReturnedLabel.place(x=500, y=250)
 
     addReview = Button(designFrame1, text='Add Review', font=("yu gothic ui bold", 12),
                        bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
-                       cursor='hand2', height=2, width=20, command=lambda: addReview())
+                       cursor='hand2', height=2, width=20, command=lambda: addReviewPop())
     addReview.place(x=100, y=740)
 
     backButton = Button(designFrame1, text='Back to Portal', font=("yu gothic ui bold", 12),
@@ -480,8 +553,43 @@ def GUI5():
                         cursor='hand2', height=2, width=20, command=returnToPortal)
     backButton.place(x=1000, y=740)
 
-    reviewListLabel = Label(designFrame2, text="Reviews", font=('Arial', 30, 'bold'), bg='#2095e9')
-    reviewListLabel.place(x=130, y=20)
+    reviewListLabel = Label(designFrame1, text="Reviews", font=('Arial', 30, 'bold'), bg='#2095e9')
+    reviewListLabel.place(x=130, y=290)
+
+    # Display table in the Review Page
+    connect = create_db_connection()
+    connReviewDisplay = connect.cursor()
+    tempQuery = "SELECT * FROM comp440_database_project.userreviews where itemID = %d;" % selectedReviewProductID
+    # print(tempQuery)
+    connReviewDisplay.execute(tempQuery)
+    reviewDisplay = ttk.Treeview(designFrame2, selectmode=BROWSE)
+    reviewDisplay['show'] = 'headings'
+    # Define number of columns
+    reviewDisplay['columns'] = ('ReviewID', 'ItemID', 'UserReview', 'UserReviewDescription', 'Username', 'DateofReview')
+
+    # Assign dimensions
+    reviewDisplay.column("ReviewID", width=120, minwidth=50, anchor=W)
+    reviewDisplay.column("ItemID", width=120, minwidth=50, anchor=W)
+    reviewDisplay.column("UserReview", width=120, minwidth=50, anchor=W)
+    reviewDisplay.column("UserReviewDescription", width=350, minwidth=50, anchor=W)
+    reviewDisplay.column("Username", width=120, minwidth=50, anchor=W)
+    reviewDisplay.column("DateofReview", width=120, minwidth=50, anchor=W)
+
+    # Assign headers to table columns
+    reviewDisplay.heading("ReviewID", text="Review ID", anchor=W)
+    reviewDisplay.heading("ItemID", text="Item ID", anchor=W)
+    reviewDisplay.heading("UserReview", text="User Review", anchor=W)
+    reviewDisplay.heading("UserReviewDescription", text="User Review Description", anchor=W)
+    reviewDisplay.heading("Username", text="Username", anchor=W)
+    reviewDisplay.heading("DateofReview", text="Date of Review", anchor=W)
+
+    i = 0
+    for ro in connReviewDisplay:
+        # print(ro)
+        reviewDisplay.insert("", i, text="", values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5]))
+        i = i + 1
+
+    reviewDisplay.place(x=0, y=0)
 
     # ========= Top Right Side Picture =========
     sideImage = Image.open('Images/left pic.png')
@@ -492,7 +600,7 @@ def GUI5():
     sideIconLabel.place(x=1000, y=30)
 
     # ========= PopUp to Add Review =========
-    def addReview():
+    def addReviewPop():
         addReviewWindow = Toplevel()
         windowWidth = 800
         windowHeight = 500
@@ -509,20 +617,52 @@ def GUI5():
         def cancelButton():
             addReviewWindow.destroy()
 
+        def submitReviewF():
+            selectedReviewItem = reviewDisplay.focus()
+            details = reviewDisplay.item(selectedReviewItem)
+            reviewProduct = details.get("values")
+
+            itemID = reviewProduct[1]
+            userReview = clicked.get()
+            userReviewDescription = descriptionTextEntry.get("1.0", END)
+            userName = userNameGlobal.lower()
+            DateofReview = listingDate
+
+            # Insert new review to SQL table
+            connect = create_db_connection()
+            connAddReview = connect.cursor()
+            procedure_name = "p_add_ItemReview"
+            OutResult = None
+            params = (object.getReviewProductName(), userReview, userReviewDescription, DateofReview, userName, OutResult)
+
+            returned_result = execute_query(connect, procedure_name, params)
+            returned_result_str = " ".join(returned_result[0])
+            print(returned_result_str)
+
+            # addReviewQuery = "INSERT INTO comp440_database_project.userreviews(itemID,userReview,userReviewDescription,userName,DateofReview) VALUES(%d, %s, %s, %s, %s);" % (itemID, userReview, userReviewDescription, userName, DateofReview)
+
+            # addReviewQuery = "INSERT INTO comp440_database_project.userreviews(`itemID`, `userReview`, `userReviewDescription`, `userName`, `DateofReview`) VALUES({id}, {uReview}, {des}, {name}, {dateN});".format(id=itemID, uReview=userReview, des=userReviewDescription, name=userName, dateN=DateofReview)
+            #addReviewQuery = "INSERT INTO comp440_database_project.userreviews(`itemID`, `userReview`, `userReviewDescription`, `userName`, `DateofReview`) VALUES(%d, '%s', '%s', '%s', '%s');" % (itemID, userReview, userReviewDescription, userName, DateofReview)
+            #connAddReview.execute(addReviewQuery)
+
+
+
+            addReviewWindow.destroy()
+
         designFrame3 = Listbox(addReviewWindow, bg='#1594ef', width=215, height=50, highlightthickness=0, borderwidth=0)
         designFrame3.place(x=0, y=0)
 
-        addReviewTitle = Label(designFrame3, text='Add Review', font=('Arial', 25, 'bold'), bg='#2095e9')
+        selectedAddReviewObjectName = object.getReviewProductName()
+        addReviewTitle = Label(designFrame3, text=selectedAddReviewObjectName, font=('Arial', 25, 'bold'), bg='#2095e9')
         addReviewTitle.place(x=80, y=15)
 
         # Dropdown Rating Options
-        ratings = [1, 2, 3, 4, 5]
-
+        ratings = ['Excellent', 'Good', 'Fair', 'Poor']
         # Datatype of Rating Text
         clicked = StringVar()
 
         # Initial Dropdown Text
-        clicked.set("1")
+        clicked.set("")
 
         # Dropdown Button
         ratingLabel = Label(addReviewWindow, text='Rating', fg="#f8f8f8", bg='#1e85d0',
@@ -537,12 +677,12 @@ def GUI5():
                                       font=("yu gothic ui", 14, 'bold'))
         descriptionPopupLabel.place(x=50, y=150)
 
-        categoryReturnLabel = Text(addReviewWindow, height=10, width=80)
-        categoryReturnLabel.place(x=50, y=200)
+        descriptionTextEntry = Text(addReviewWindow, height=10, width=80)
+        descriptionTextEntry.place(x=50, y=200)
 
         submitReview = Button(designFrame3, text='Submit', font=("yu gothic ui bold", 12),
                               bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
-                              cursor='hand2', height=2, width=20, command=None)
+                              cursor='hand2', height=2, width=20, command=lambda: submitReviewF())
         submitReview.place(x=50, y=420)
 
         cancelReviewPopUp = Button(designFrame3, text='Cancel', font=("yu gothic ui bold", 12),
