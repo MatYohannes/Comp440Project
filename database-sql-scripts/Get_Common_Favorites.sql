@@ -5,7 +5,7 @@
     Updated On:  2023-11-20 10:48:12
     
     execution statement example: 
-                   CALL GetCommonFavorites('userX', 'userY');
+                   CALL Get_Common_Favorites('userX', 'userY');
 			
 */ 
 
@@ -20,26 +20,14 @@ CREATE PROCEDURE Get_Common_Favorites(
     IN userY VARCHAR(30)
 )
 BEGIN
-    -- Create a temporary table to store the favorites of X and Y
-    CREATE TEMPORARY TABLE temp_favorites AS
-    SELECT userName
-    FROM favorites
-    WHERE favoritedBy = userX;
+  
+	SELECT DISTINCT uf1.favourite_userName  AS CommonFavorite 
+				FROM userFavourites uf1
+				JOIN userFavourites uf2 
+					ON uf1.favourite_userName = uf2.favourite_userName
+				WHERE uf1.userName  = userX
+                  AND uf2.userName = userY;
 
-    -- Insert favorites of Y into the temporary table
-    INSERT INTO temp_favorites
-    SELECT userName
-    FROM favorites
-    WHERE favoritedBy = userY;
-
-    -- Retrieve the users who are common favorites for X and Y
-    SELECT userName
-    FROM temp_favorites
-    GROUP BY userName
-    HAVING COUNT(userName) = 2;
-
-    -- Drop the temporary table
-    DROP TEMPORARY TABLE IF EXISTS temp_favorites;
 END $$
 
 DELIMITER ;
