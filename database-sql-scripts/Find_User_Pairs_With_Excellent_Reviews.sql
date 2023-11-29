@@ -42,9 +42,7 @@ BEGIN
 			LEAST(UserA, UserB) AS User1,
 			GREATEST(UserA, UserB) AS User2
 		from user_pairs;
-        
-        
-        
+                
 END $$
 
 DELIMITER ;
