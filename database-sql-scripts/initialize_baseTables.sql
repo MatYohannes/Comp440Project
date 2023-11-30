@@ -18,6 +18,26 @@ CREATE PROCEDURE initialize_baseTables (OUT output_message varchar(255))
 BEGIN
    
     
+	
+	ALTER TABLE userReviews 
+    DROP FOREIGN KEY  `fk_userreview_userName`; 
+    
+    ALTER TABLE userReviews 
+    DROP FOREIGN KEY  `fk_userreview_itemID`; 
+    
+    ALTER TABLE userReviews 
+    DROP CHECK `chk_userReview`; 
+    
+   
+    DROP TABLE  IF EXISTS comp440_database_project.userReviews; 
+        
+    ALTER TABLE itemDetails  
+    DROP FOREIGN KEY  `fk_itemdetails_userName`; 
+    
+  	DROP TABLE IF EXISTS comp440_database_project.itemDetails;
+	 
+        
+    
 	CREATE TABLE IF NOT EXISTS `userDetails`(
 		userName VARCHAR(30) NOT NULL PRIMARY KEY, 
         userPassword VARCHAR(25) NOT NULL,
@@ -27,13 +47,8 @@ BEGIN
 		);
         
 	-- drop fk constraints and tables
-    ALTER TABLE itemDetails  DROP CONSTRAINT  `itemdetails_ibfk_1`; 
-	ALTER TABLE userReviews DROP CONSTRAINT  `userreviews_ibfk_1`; 
-    ALTER TABLE userReviews DROP CONSTRAINT `userreviews_ibfk_2`; 
-    DROP TABLE `itemDetails`;
-	DROP TABLE `userReviews`;
 	
-	
+    
 	Call p_insert_to_initialize_baseTables();
     
     SET output_message = 'Database Initialized';
