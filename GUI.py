@@ -75,17 +75,19 @@ class reviewedObject:
 def initializeDB():
     conn = create_db_connection()
     outResult = None
+
     if conn:
         try:
             # Define the stored procedure name
             procedure_name = "initialize_baseTables"
 
             # Create a tuple containing the input parameters for the stored procedure
-            params = ()
+            params = (outResult,)
 
             query = procedure_name
             returned_result = execute_query(conn, query, params)
-            # print(returned_result)
+
+            print(returned_result)
             returned_result_str = " ".join(returned_result[0])
 
             if returned_result_str == "Database Initialized":
@@ -161,7 +163,7 @@ def GUI2():
 
     InitializeDB = Button(portal, text='Initialize DataBase', font=("yu gothic ui bold", 12),
                           bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
-                          cursor='hand2', height=2, width=30, command=initializeDB)
+                          cursor='hand2', height=2, width=30, command=lambda: initializeDB())
     InitializeDB.place(x=100, y=550)
 
     closeProgramButton = Button(portal, text='Close Program', font=("yu gothic ui bold", 12),
@@ -638,14 +640,10 @@ def GUI5(object):
         def cancelButton():
             addReviewWindow.destroy()
 
-        def submitReviewF():
+        def submitReviewF(rating, descrip):
             selectedReviewItem = reviewDisplay.focus()
             details = reviewDisplay.item(selectedReviewItem)
             reviewProduct = details.get("values")
-
-            itemID = reviewProduct[1]
-            userReview = clicked.get()
-            userReviewDescription = descriptionTextEntry.get("1.0", END)
             userName = userNameGlobal.lower()
             DateofReview = listingDate
 
@@ -655,11 +653,16 @@ def GUI5(object):
             procedure_name = "p_add_ItemReview"
             OutResult = None
             params = (
-                object.getReviewProductName(), userReview, userReviewDescription, DateofReview, userName, OutResult)
+                object.getReviewProductName(), rating, descrip, DateofReview, userName, OutResult)
 
             returned_result = execute_query(connect, procedure_name, params)
             returned_result_str = " ".join(returned_result[0])
             print(returned_result_str)
+
+            if returned_result_str == "Review Inserted Successfully":
+                messagebox.showinfo(
+                    title="Success", message="Review Inserted Successfully"
+                )
 
             # addReviewQuery = "INSERT INTO comp440_database_project.userreviews(itemID,userReview,userReviewDescription,userName,DateofReview) VALUES(%d, %s, %s, %s, %s);" % (itemID, userReview, userReviewDescription, userName, DateofReview)
 
@@ -679,10 +682,10 @@ def GUI5(object):
         # Dropdown Rating Options
         ratings = ['Excellent', 'Good', 'Fair', 'Poor']
         # Datatype of Rating Text
-        clicked = StringVar()
+        clicked = StringVar(addReviewWindow)
 
         # Initial Dropdown Text
-        clicked.set("")
+        clicked.set("Excellent")
 
         # Dropdown Button
         ratingLabel = Label(addReviewWindow, text='Rating', fg="#f8f8f8", bg='#1e85d0',
@@ -702,7 +705,7 @@ def GUI5(object):
 
         submitReview = Button(designFrame3, text='Submit', font=("yu gothic ui bold", 12),
                               bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
-                              cursor='hand2', height=2, width=20, command=lambda: submitReviewF())
+                              cursor='hand2', height=2, width=20, command=lambda: submitReviewF(clicked.get(), descriptionTextEntry.get("1.0",END)))
         submitReview.place(x=50, y=420)
 
         cancelReviewPopUp = Button(designFrame3, text='Cancel', font=("yu gothic ui bold", 12),
