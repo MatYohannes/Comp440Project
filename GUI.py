@@ -1,4 +1,5 @@
 import os
+from calendar import Calendar
 from tkinter import *
 from PIL import ImageTk, Image  # type "Pip install pillow" in your terminal to install ImageTk and Image module
 from tkinter import Button, messagebox, ttk
@@ -11,7 +12,7 @@ import datetime
 host = "localhost"
 database = "comp440_database_project"
 user = "root"
-password = "$$"  # enter password
+password = ""  # enter password
 date = datetime.datetime.now()
 listingDate = date.strftime("%Y-%m-%d")
 
@@ -72,7 +73,27 @@ class reviewedObject:
 
 
 def initializeDB():
-    messagebox.showinfo(title="Success", message="Database initialized!")
+    conn = create_db_connection()
+    outResult = None
+    if conn:
+        try:
+            # Define the stored procedure name
+            procedure_name = "initialize_baseTables"
+
+            # Create a tuple containing the input parameters for the stored procedure
+            params = ()
+
+            query = procedure_name
+            returned_result = execute_query(conn, query, params)
+            # print(returned_result)
+            returned_result_str = " ".join(returned_result[0])
+
+            if returned_result_str == "Database Initialized":
+                messagebox.showinfo(
+                    title="Success", message="Database initialized!"
+                )
+        finally:
+            conn.close()
 
 
 def GUI2():
@@ -97,8 +118,12 @@ def GUI2():
         portalPage.destroy()
         GUI4()
 
+    def enterReports():
+        portalPage.destroy()
+        GUI6()
+
     def closeProgram():
-        portalPage.quit()
+        portalPage.destroy()
 
     # ====================== PENDING =====================
     # When Reports is clicked, enter TBD
@@ -131,7 +156,7 @@ def GUI2():
 
     reportsButton = Button(portal, text='Reports', font=("yu gothic ui bold", 12),
                            bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
-                           cursor='hand2', height=2, width=30, command=None)
+                           cursor='hand2', height=2, width=30, command=enterReports)
     reportsButton.place(x=100, y=450)
 
     InitializeDB = Button(portal, text='Initialize DataBase', font=("yu gothic ui bold", 12),
@@ -310,10 +335,6 @@ def GUI4():
     def returnToPortal():
         searchWindow.destroy()
         GUI2()
-
-    def addReviewF(obj):
-        searchWindow.destroy()
-        GUI5()
 
     def getSelectItem():
         selectedItem = searchDisplay.focus()
@@ -633,7 +654,8 @@ def GUI5(object):
             connAddReview = connect.cursor()
             procedure_name = "p_add_ItemReview"
             OutResult = None
-            params = (object.getReviewProductName(), userReview, userReviewDescription, DateofReview, userName, OutResult)
+            params = (
+                object.getReviewProductName(), userReview, userReviewDescription, DateofReview, userName, OutResult)
 
             returned_result = execute_query(connect, procedure_name, params)
             returned_result_str = " ".join(returned_result[0])
@@ -642,10 +664,8 @@ def GUI5(object):
             # addReviewQuery = "INSERT INTO comp440_database_project.userreviews(itemID,userReview,userReviewDescription,userName,DateofReview) VALUES(%d, %s, %s, %s, %s);" % (itemID, userReview, userReviewDescription, userName, DateofReview)
 
             # addReviewQuery = "INSERT INTO comp440_database_project.userreviews(`itemID`, `userReview`, `userReviewDescription`, `userName`, `DateofReview`) VALUES({id}, {uReview}, {des}, {name}, {dateN});".format(id=itemID, uReview=userReview, des=userReviewDescription, name=userName, dateN=DateofReview)
-            #addReviewQuery = "INSERT INTO comp440_database_project.userreviews(`itemID`, `userReview`, `userReviewDescription`, `userName`, `DateofReview`) VALUES(%d, '%s', '%s', '%s', '%s');" % (itemID, userReview, userReviewDescription, userName, DateofReview)
-            #connAddReview.execute(addReviewQuery)
-
-
+            # addReviewQuery = "INSERT INTO comp440_database_project.userreviews(`itemID`, `userReview`, `userReviewDescription`, `userName`, `DateofReview`) VALUES(%d, '%s', '%s', '%s', '%s');" % (itemID, userReview, userReviewDescription, userName, DateofReview)
+            # connAddReview.execute(addReviewQuery)
 
             addReviewWindow.destroy()
 
@@ -691,6 +711,758 @@ def GUI5(object):
         cancelReviewPopUp.place(x=250, y=420)
 
     viewItemWindow.mainloop()
+
+
+def GUI6():
+    reportsWindow = Tk()
+    reportsWindow.rowconfigure(0, weight=1)
+    reportsWindow.columnconfigure(0, weight=1)
+    reportsWindow.state('zoomed')
+    reportsWindow.resizable(0, 0)
+    reportsWindow.title('Reports')
+
+    reportIcon = PhotoImage(file='Images/main user.png')
+    reportsWindow.iconphoto(True, reportIcon)
+
+    question = Frame(reportsWindow)
+    question.grid(row=0, column=0, sticky='nsew')
+
+    # ============== Page Layout =====================
+
+    reportsMainFrame = Listbox(question, bg='#0c71b9', width=500, height=60, highlightthickness=0, borderwidth=0)
+    reportsMainFrame.place(x=0, y=0)
+
+    reportsLabel = Label(question, text='Reports', font=('Arial', 40, 'bold'), bg='#0c71b9')
+    reportsLabel.place(x=130, y=15)
+
+    # Displaying Question One
+    def questionOne():
+        questionOnePopup = Toplevel()
+        windowWidth = 800
+        windowHeight = 500
+        screenWidth = questionOnePopup.winfo_screenwidth()
+        screenHeight = questionOnePopup.winfo_screenheight()
+        positionTop = int(screenHeight / 4 - windowHeight / 4)
+        positionRight = int(screenWidth / 2 - windowWidth / 2)
+        questionOnePopup.geometry(f'{windowWidth}x{windowHeight}+{positionRight}+{positionTop}')
+        questionOnePopup.title('Question 1')
+        questionOnePopup.iconbitmap('Images/show.png')  ######
+        questionOnePopup.configure(background='#f8f8f8')
+        questionOnePopup.resizable(0, 0)
+
+        def exitButton():
+            questionOnePopup.destroy()
+
+        questionOneFrame = Listbox(questionOnePopup, bg='#1594ef', width=215, height=50, highlightthickness=0,
+                                   borderwidth=0)
+        questionOneFrame.place(x=0, y=0)
+
+        questionOneFrame2 = Listbox(questionOnePopup, bg='#0c71b9', width=190, height=21, highlightthickness=0,
+                                    borderwidth=0)
+        questionOneFrame2.place(x=0, y=75)
+
+        QuestionOneTitle = Label(questionOneFrame, text="List the most expensive items in each category",
+                                 font=('Arial', 20, 'bold'),
+                                 bg='#2095e9')
+        QuestionOneTitle.place(x=80, y=15)
+
+        backButtonPopUp = Button(questionOneFrame, text='Back', font=("yu gothic ui bold", 12),
+                                 bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
+                                 cursor='hand2', height=2, width=20, command=lambda: exitButton())
+        backButtonPopUp.place(x=600, y=425)
+
+        connect = create_db_connection()
+        procedure_name = "List_Most_Expensive_Items"
+        params = ()
+        returned_result = execute_query(connect, procedure_name, params)
+        questionOneDisplay = ttk.Treeview(questionOneFrame2, selectmode=BROWSE)
+        questionOneDisplay['show'] = 'headings'
+        # Define number of columns
+        questionOneDisplay['columns'] = (
+            'ItemID', 'itemTitle', 'itemDescription', 'itemCategory', 'itemPrice'
+        )
+        questionOneDisplay.column("ItemID", width=120, minwidth=50, anchor=W)
+        questionOneDisplay.column("itemTitle", width=120, minwidth=50, anchor=W)
+        questionOneDisplay.column("itemDescription", width=120, minwidth=50, anchor=W)
+        questionOneDisplay.column("itemCategory", width=120, minwidth=50, anchor=W)
+        questionOneDisplay.column("itemPrice", width=120, minwidth=50, anchor=W)
+
+        # Assign headers to table columns
+        questionOneDisplay.heading("ItemID", text="Item ID", anchor=W)
+        questionOneDisplay.heading("itemTitle", text="Item Name", anchor=W)
+        questionOneDisplay.heading("itemDescription", text="Description", anchor=W)
+        questionOneDisplay.heading("itemCategory", text="Category", anchor=W)
+        questionOneDisplay.heading("itemPrice", text="Price", anchor=W)
+
+        i = 0
+        for ro in returned_result:
+            # print(ro)
+            questionOneDisplay.insert("", i, text="", values=(ro[0], ro[1], ro[2], ro[3], ro[4]))
+            i = i + 1
+        questionOneDisplay.place(x=0, y=0)
+
+    def questionTwo(cat1, cat2):
+        questionTwoPopup = Toplevel()
+        windowWidth = 800
+        windowHeight = 500
+        screenWidth = questionTwoPopup.winfo_screenwidth()
+        screenHeight = questionTwoPopup.winfo_screenheight()
+        positionTop = int(screenHeight / 4 - windowHeight / 4)
+        positionRight = int(screenWidth / 2 - windowWidth / 2)
+        questionTwoPopup.geometry(f'{windowWidth}x{windowHeight}+{positionRight}+{positionTop}')
+        questionTwoPopup.title('Question 2')
+        questionTwoPopup.iconbitmap('Images/show.png')  ######
+        questionTwoPopup.configure(background='#f8f8f8')
+        questionTwoPopup.resizable(0, 0)
+
+        def exitButton():
+            questionTwoPopup.destroy()
+
+        questionTwoFrame = Listbox(questionTwoPopup, bg='#1594ef', width=215, height=50, highlightthickness=0,
+                                   borderwidth=0)
+        questionTwoFrame.place(x=0, y=0)
+
+        questionTwoFrame2 = Listbox(questionTwoPopup, bg='#0c71b9', width=190, height=21, highlightthickness=0,
+                                    borderwidth=0)
+        questionTwoFrame2.place(x=0, y=75)
+
+        QuestionTwoTitle = Label(questionTwoFrame, text="List the users who posted at least two items that were posted"
+                                                        " on the same day,\n one has a category of X, and another has "
+                                                        "a category of Y.", font=('Arial', 12, 'bold'), bg='#2095e9')
+        QuestionTwoTitle.place(x=50, y=15)
+
+        backButtonPopUp = Button(questionTwoFrame, text='Back', font=("yu gothic ui bold", 12),
+                                 bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
+                                 cursor='hand2', height=2, width=20, command=lambda: exitButton())
+        backButtonPopUp.place(x=600, y=425)
+
+        connect = create_db_connection()
+        procedure_name = "Find_Users_With_Two_Items_Same_Day"
+        params = (cat1, cat2)
+        returned_result = execute_query(connect, procedure_name, params)
+        questionTwoDisplay = ttk.Treeview(questionTwoFrame2, selectmode=BROWSE)
+        questionTwoDisplay['show'] = 'headings'
+        # Define number of columns
+        questionTwoDisplay['columns'] = (
+            'Category1UserName', 'itemCategory', 'ItemsPostedbyUserInCategory1', 'DateofListing', 'Category2UserName',
+            'itemCategory', 'ItemsPostedbyUserInCategory2', 'DateofListing')
+
+        # Assign dimensions
+        questionTwoDisplay.column("Category1UserName", width=50, minwidth=50, anchor=W)
+        questionTwoDisplay.column("itemCategory", width=50, minwidth=50, anchor=W)
+        questionTwoDisplay.column("ItemsPostedbyUserInCategory1", width=50, minwidth=50, anchor=W)
+        questionTwoDisplay.column("DateofListing", width=50, minwidth=50, anchor=W)
+        questionTwoDisplay.column("Category2UserName", width=50, minwidth=50, anchor=W)
+        questionTwoDisplay.column("itemCategory", width=50, minwidth=50, anchor=W)
+        questionTwoDisplay.column("ItemsPostedbyUserInCategory2", width=50, minwidth=50, anchor=W)
+        questionTwoDisplay.column("DateofListing", width=50, minwidth=50, anchor=W)
+
+        # Assign headers to table columns
+        questionTwoDisplay.heading("Category1UserName", text="Category1UserName", anchor=W)
+        questionTwoDisplay.heading("itemCategory", text="itemCategory", anchor=W)
+        questionTwoDisplay.heading("ItemsPostedbyUserInCategory1", text="ItemsPostedbyUserInCategory1", anchor=W)
+        questionTwoDisplay.heading("DateofListing", text="DateofListing", anchor=W)
+        questionTwoDisplay.heading("Category2UserName", text="Category2UserName", anchor=W)
+        questionTwoDisplay.heading("itemCategory", text="AitemCategory", anchor=W)
+        questionTwoDisplay.heading("ItemsPostedbyUserInCategory2", text="ItemsPostedbyUserInCategory2", anchor=W)
+        questionTwoDisplay.heading("DateofListing", text="DateofListing", anchor=W)
+
+        i = 0
+        for ro in returned_result:
+            # print(ro)
+            questionTwoDisplay.insert("", i, text="", values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5], ro[6], ro[7]))
+            i = i + 1
+
+        questionTwoDisplay.place(x=0, y=0)
+
+    def questionThree(usr):
+        questionThreePopup = Toplevel()
+        windowWidth = 800
+        windowHeight = 500
+        screenWidth = questionThreePopup.winfo_screenwidth()
+        screenHeight = questionThreePopup.winfo_screenheight()
+        positionTop = int(screenHeight / 4 - windowHeight / 4)
+        positionRight = int(screenWidth / 2 - windowWidth / 2)
+        questionThreePopup.geometry(f'{windowWidth}x{windowHeight}+{positionRight}+{positionTop}')
+        questionThreePopup.title('Question 3')
+        questionThreePopup.iconbitmap('Images/show.png')  ######
+        questionThreePopup.configure(background='#f8f8f8')
+        questionThreePopup.resizable(0, 0)
+
+        def exitButton():
+            questionThreePopup.destroy()
+
+        questionThreeFrame = Listbox(questionThreePopup, bg='#1594ef', width=215, height=50, highlightthickness=0,
+                                     borderwidth=0)
+        questionThreeFrame.place(x=0, y=0)
+
+        questionThreeFrame2 = Listbox(questionThreePopup, bg='#0c71b9', width=190, height=21, highlightthickness=0,
+                                      borderwidth=0)
+        questionThreeFrame2.place(x=0, y=75)
+
+        QuestionThreeTitle = Label(questionThreeFrame, text="List all the items posted by user X, such that all the "
+                                                            "comments are \"Excellent\" or \"good\" for these items",
+                                   font=('Arial', 10, 'bold'),
+                                   bg='#2095e9')
+        QuestionThreeTitle.place(x=50, y=15)
+
+        backButtonPopUp = Button(questionThreeFrame, text='Back', font=("yu gothic ui bold", 12),
+                                 bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
+                                 cursor='hand2', height=2, width=20, command=lambda: exitButton())
+        backButtonPopUp.place(x=600, y=425)
+
+        connect = create_db_connection()
+        procedure_name = "Find_Items_With_Positive_Comments"
+        params = (usr,)
+        returned_result = execute_query(connect, procedure_name, params)
+        questionThreeDisplay = ttk.Treeview(questionThreeFrame2, selectmode=BROWSE)
+        questionThreeDisplay['show'] = 'headings'
+        # Define number of columns
+        questionThreeDisplay['columns'] = (
+            'ItemID', 'itemTitle', 'itemDescription', 'itemCategory', 'itemPrice', 'userName', 'DateofListing')
+
+        # Assign dimensions
+        questionThreeDisplay.column("ItemID", width=100, minwidth=50, anchor=W)
+        questionThreeDisplay.column("itemTitle", width=100, minwidth=50, anchor=W)
+        questionThreeDisplay.column("itemDescription", width=100, minwidth=50, anchor=W)
+        questionThreeDisplay.column("itemCategory", width=100, minwidth=50, anchor=W)
+        questionThreeDisplay.column("itemPrice", width=100, minwidth=50, anchor=W)
+        questionThreeDisplay.column("userName", width=100, minwidth=50, anchor=W)
+        questionThreeDisplay.column("DateofListing", width=100, minwidth=50, anchor=W)
+
+        # Assign headers to table columns
+        questionThreeDisplay.heading("ItemID", text="Item ID", anchor=W)
+        questionThreeDisplay.heading("itemTitle", text="Item Name", anchor=W)
+        questionThreeDisplay.heading("itemDescription", text="Description", anchor=W)
+        questionThreeDisplay.heading("itemCategory", text="Category", anchor=W)
+        questionThreeDisplay.heading("itemPrice", text="Price", anchor=W)
+        questionThreeDisplay.heading("userName", text="Added By", anchor=W)
+        questionThreeDisplay.heading("DateofListing", text="Created Date", anchor=W)
+
+        i = 0
+        for ro in returned_result:
+            # print(ro)
+            questionThreeDisplay.insert("", i, text="", values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5], ro[6]))
+            i = i + 1
+
+        questionThreeDisplay.place(x=0, y=0)
+
+    def questionFour(dateSelected):
+        questionFourPopup = Toplevel()
+        windowWidth = 800
+        windowHeight = 500
+        screenWidth = questionFourPopup.winfo_screenwidth()
+        screenHeight = questionFourPopup.winfo_screenheight()
+        positionTop = int(screenHeight / 4 - windowHeight / 4)
+        positionRight = int(screenWidth / 2 - windowWidth / 2)
+        questionFourPopup.geometry(f'{windowWidth}x{windowHeight}+{positionRight}+{positionTop}')
+        questionFourPopup.title('Question 4')
+        questionFourPopup.iconbitmap('Images/show.png')  ######
+        questionFourPopup.configure(background='#f8f8f8')
+        questionFourPopup.resizable(0, 0)
+
+        def exitButton():
+            questionFourPopup.destroy()
+
+        questionFourFrame = Listbox(questionFourPopup, bg='#1594ef', width=215, height=50, highlightthickness=0,
+                                    borderwidth=0)
+        questionFourFrame.place(x=0, y=0)
+
+        questionFourFrame2 = Listbox(questionFourPopup, bg='#0c71b9', width=190, height=21, highlightthickness=0,
+                                     borderwidth=0)
+        questionFourFrame2.place(x=0, y=75)
+
+        QuestionFourTitle = Label(questionFourFrame, text="List the users who posted the most number of items on a specific date like 5/1/2023.",
+                                  font=('Arial', 12, 'bold'),
+                                  bg='#2095e9')
+        QuestionFourTitle.place(x=50, y=15)
+
+        backButtonPopUp = Button(questionFourFrame, text='Back', font=("yu gothic ui bold", 12),
+                                 bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
+                                 cursor='hand2', height=2, width=20, command=lambda: exitButton())
+        backButtonPopUp.place(x=600, y=425)
+
+        connect = create_db_connection()
+        procedure_name = "Find_Top_Users_On_Date"
+        params = (dateSelected,)
+        returned_result = execute_query(connect, procedure_name, params)
+        questionFourDisplay = ttk.Treeview(questionFourFrame2, selectmode=BROWSE)
+        questionFourDisplay['show'] = 'headings'
+        # Define number of columns
+        questionFourDisplay['columns'] = ('userName', 'DateofListing')
+
+        # Assign dimensions
+        questionFourDisplay.column("userName", width=100, minwidth=50, anchor=W)
+        questionFourDisplay.column("DateofListing", width=100, minwidth=50, anchor=W)
+
+        # Assign headers to table columns
+        questionFourDisplay.heading("userName", text="Added By", anchor=W)
+        questionFourDisplay.heading("DateofListing", text="Created Date", anchor=W)
+
+        i = 0
+        for ro in returned_result:
+            # print(ro)
+            questionFourDisplay.insert("", i, text="", values=(ro[0], ro[1]))
+            i = i + 1
+
+        questionFourDisplay.place(x=20, y=0)
+
+    def questionFive(usr1, usr2):
+        questionFIvePopup = Toplevel()
+        windowWidth = 800
+        windowHeight = 500
+        screenWidth = questionFIvePopup.winfo_screenwidth()
+        screenHeight = questionFIvePopup.winfo_screenheight()
+        positionTop = int(screenHeight / 4 - windowHeight / 4)
+        positionRight = int(screenWidth / 2 - windowWidth / 2)
+        questionFIvePopup.geometry(f'{windowWidth}x{windowHeight}+{positionRight}+{positionTop}')
+        questionFIvePopup.title('Question 5')
+        questionFIvePopup.iconbitmap('Images/show.png')  ######
+        questionFIvePopup.configure(background='#f8f8f8')
+        questionFIvePopup.resizable(0, 0)
+
+        def exitButton():
+            questionFIvePopup.destroy()
+
+        questionFiveFrame = Listbox(questionFIvePopup, bg='#1594ef', width=215, height=50, highlightthickness=0,
+                                    borderwidth=0)
+        questionFiveFrame.place(x=0, y=0)
+
+        questionFiveFrame2 = Listbox(questionFIvePopup, bg='#0c71b9', width=190, height=21, highlightthickness=0,
+                                     borderwidth=0)
+        questionFiveFrame2.place(x=0, y=75)
+
+        QuestionFiveTitle = Label(questionFiveFrame, text="List the other users who are favorited by both users X, and Y.",
+                                  font=('Arial', 12, 'bold'),
+                                  bg='#2095e9')
+        QuestionFiveTitle.place(x=50, y=15)
+
+        backButtonPopUp = Button(questionFiveFrame, text='Back', font=("yu gothic ui bold", 12),
+                                 bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
+                                 cursor='hand2', height=2, width=20, command=lambda: exitButton())
+        backButtonPopUp.place(x=600, y=425)
+
+        connect = create_db_connection()
+        procedure_name = "Get_Common_Favorites"
+        params = (usr1, usr2)
+        returned_result = execute_query(connect, procedure_name, params)
+        questionFiveDisplay = ttk.Treeview(questionFiveFrame2, selectmode=BROWSE)
+        questionFiveDisplay['show'] = 'headings'
+        # Define number of columns
+        questionFiveDisplay['columns'] = ('CommonFavorites')
+
+        # Assign dimensions
+        questionFiveDisplay.column("CommonFavorites", width=150, minwidth=50, anchor=W)
+
+        # Assign headers to table columns
+        questionFiveDisplay.heading("CommonFavorites", text="Common Favorites", anchor=W)
+
+        i = 0
+        for ro in returned_result:
+            # print(ro)
+            questionFiveDisplay.insert("", i, text="", values=(ro[0]))
+            i = i + 1
+
+        questionFiveDisplay.place(x=20, y=0)
+
+    def questionSix():
+        questionSixPopup = Toplevel()
+        windowWidth = 800
+        windowHeight = 500
+        screenWidth = questionSixPopup.winfo_screenwidth()
+        screenHeight = questionSixPopup.winfo_screenheight()
+        positionTop = int(screenHeight / 4 - windowHeight / 4)
+        positionRight = int(screenWidth / 2 - windowWidth / 2)
+        questionSixPopup.geometry(f'{windowWidth}x{windowHeight}+{positionRight}+{positionTop}')
+        questionSixPopup.title('Question 6')
+        questionSixPopup.iconbitmap('Images/show.png')  ######
+        questionSixPopup.configure(background='#f8f8f8')
+        questionSixPopup.resizable(0, 0)
+
+        def exitButton():
+            questionSixPopup.destroy()
+
+        questionSixFrame = Listbox(questionSixPopup, bg='#1594ef', width=215, height=50, highlightthickness=0,
+                                   borderwidth=0)
+        questionSixFrame.place(x=0, y=0)
+
+        questionSixFrame2 = Listbox(questionSixPopup, bg='#0c71b9', width=190, height=21, highlightthickness=0,
+                                    borderwidth=0)
+        questionSixFrame2.place(x=0, y=75)
+
+        QuestionSixTitle = Label(questionSixFrame,
+                                 text="Display all the users who never posted any \"excellent\" items",
+                                 font=('Arial', 16, 'bold'), bg='#2095e9')
+        QuestionSixTitle.place(x=50, y=15)
+
+        backButtonPopUp = Button(questionSixFrame, text='Back', font=("yu gothic ui bold", 12),
+                                 bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
+                                 cursor='hand2', height=2, width=20, command=lambda: exitButton())
+        backButtonPopUp.place(x=600, y=425)
+
+        connect = create_db_connection()
+        procedure_name = "Users_With_No_Excellent_Items"
+        params = ()
+        returned_result = execute_query(connect, procedure_name, params)
+        questionSixDisplay = ttk.Treeview(questionSixFrame2, selectmode=BROWSE)
+        questionSixDisplay['show'] = 'headings'
+        # Define number of columns
+        questionSixDisplay['columns'] = ('userName')
+
+        # Assign dimensions
+        questionSixDisplay.column("userName", width=100, minwidth=50, anchor=W)
+
+        # Assign headers to table columns
+        questionSixDisplay.heading("userName", text="userName", anchor=W)
+
+        i = 0
+        for ro in returned_result:
+            # print(ro)
+            questionSixDisplay.insert("", i, text="", values=(ro[0]))
+            i = i + 1
+
+        questionSixDisplay.place(x=20, y=0)
+
+    def questionSeven():
+        questionSevenPopup = Toplevel()
+        windowWidth = 800
+        windowHeight = 500
+        screenWidth = questionSevenPopup.winfo_screenwidth()
+        screenHeight = questionSevenPopup.winfo_screenheight()
+        positionTop = int(screenHeight / 4 - windowHeight / 4)
+        positionRight = int(screenWidth / 2 - windowWidth / 2)
+        questionSevenPopup.geometry(f'{windowWidth}x{windowHeight}+{positionRight}+{positionTop}')
+        questionSevenPopup.title('Question 7')
+        questionSevenPopup.iconbitmap('Images/show.png')  ######
+        questionSevenPopup.configure(background='#f8f8f8')
+        questionSevenPopup.resizable(0, 0)
+
+        def exitButton():
+            questionSevenPopup.destroy()
+
+        questionSevenFrame = Listbox(questionSevenPopup, bg='#1594ef', width=215, height=50, highlightthickness=0,
+                                     borderwidth=0)
+        questionSevenFrame.place(x=0, y=0)
+
+        questionSevenFrame2 = Listbox(questionSevenPopup, bg='#0c71b9', width=190, height=21, highlightthickness=0,
+                                      borderwidth=0)
+        questionSevenFrame2.place(x=0, y=75)
+
+        QuestionSevenTitle = Label(questionSevenFrame,
+                                   text="Display all the users who never posted a \"poor\" review.",
+                                   font=('Arial', 16, 'bold'), bg='#2095e9')
+        QuestionSevenTitle.place(x=50, y=15)
+
+        backButtonPopUp = Button(questionSevenFrame, text='Back', font=("yu gothic ui bold", 12),
+                                 bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
+                                 cursor='hand2', height=2, width=20, command=lambda: exitButton())
+        backButtonPopUp.place(x=600, y=425)
+
+        connect = create_db_connection()
+        procedure_name = "Users_With_No_Poor_Reviews"
+        params = ()
+        returned_result = execute_query(connect, procedure_name, params)
+        questionSevenDisplay = ttk.Treeview(questionSevenFrame2, selectmode=BROWSE)
+        questionSevenDisplay['show'] = 'headings'
+        # Define number of columns
+        questionSevenDisplay['columns'] = ('userName')
+
+        # Assign dimensions
+        questionSevenDisplay.column("userName", width=100, minwidth=50, anchor=W)
+
+        # Assign headers to table columns
+        questionSevenDisplay.heading("userName", text="userName", anchor=W)
+
+        i = 0
+        for ro in returned_result:
+            # print(ro)
+            questionSevenDisplay.insert("", i, text="", values=(ro[0]))
+            i = i + 1
+
+        questionSevenDisplay.place(x=20, y=0)
+
+    def questionEight():
+        questionEightPopup = Toplevel()
+        windowWidth = 800
+        windowHeight = 500
+        screenWidth = questionEightPopup.winfo_screenwidth()
+        screenHeight = questionEightPopup.winfo_screenheight()
+        positionTop = int(screenHeight / 4 - windowHeight / 4)
+        positionRight = int(screenWidth / 2 - windowWidth / 2)
+        questionEightPopup.geometry(f'{windowWidth}x{windowHeight}+{positionRight}+{positionTop}')
+        questionEightPopup.title('Question 8')
+        questionEightPopup.iconbitmap('Images/show.png')  ######
+        questionEightPopup.configure(background='#f8f8f8')
+        questionEightPopup.resizable(0, 0)
+
+        def exitButton():
+            questionEightPopup.destroy()
+
+        questionEightFrame = Listbox(questionEightPopup, bg='#1594ef', width=215, height=50, highlightthickness=0,
+                                     borderwidth=0)
+        questionEightFrame.place(x=0, y=0)
+
+        questionEightFrame2 = Listbox(questionEightPopup, bg='#0c71b9', width=190, height=21, highlightthickness=0,
+                                      borderwidth=0)
+        questionEightFrame2.place(x=0, y=75)
+
+        QuestionEightTitle = Label(questionEightFrame, text="Display all the users who posted some reviews, but"
+                                                            " each of them is \"poor\".", font=('Arial', 14, 'bold'),
+                                   bg='#2095e9')
+        QuestionEightTitle.place(x=50, y=15)
+
+        backButtonPopUp = Button(questionEightFrame, text='Back', font=("yu gothic ui bold", 12),
+                                 bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
+                                 cursor='hand2', height=2, width=20, command=lambda: exitButton())
+        backButtonPopUp.place(x=600, y=425)
+
+        connect = create_db_connection()
+        procedure_name = "Users_With_Only_Poor_Reviews"
+        params = ()
+        returned_result = execute_query(connect, procedure_name, params)
+        questionEightDisplay = ttk.Treeview(questionEightFrame2, selectmode=BROWSE)
+        questionEightDisplay['show'] = 'headings'
+        # Define number of columns
+        questionEightDisplay['columns'] = ('userName')
+
+        # Assign dimensions
+        questionEightDisplay.column("userName", width=100, minwidth=50, anchor=W)
+
+        # Assign headers to table columns
+        questionEightDisplay.heading("userName", text="userName", anchor=W)
+
+        i = 0
+        for ro in returned_result:
+            # print(ro)
+            questionEightDisplay.insert("", i, text="", values=(ro[0]))
+            i = i + 1
+
+        questionEightDisplay.place(x=20, y=0)
+
+    def questionNine():
+        questionNinePopup = Toplevel()
+        windowWidth = 800
+        windowHeight = 500
+        screenWidth = questionNinePopup.winfo_screenwidth()
+        screenHeight = questionNinePopup.winfo_screenheight()
+        positionTop = int(screenHeight / 4 - windowHeight / 4)
+        positionRight = int(screenWidth / 2 - windowWidth / 2)
+        questionNinePopup.geometry(f'{windowWidth}x{windowHeight}+{positionRight}+{positionTop}')
+        questionNinePopup.title('Question 9')
+        questionNinePopup.iconbitmap('Images/show.png')  ######
+        questionNinePopup.configure(background='#f8f8f8')
+        questionNinePopup.resizable(0, 0)
+
+        def exitButton():
+            questionNinePopup.destroy()
+
+        questionNineFrame = Listbox(questionNinePopup, bg='#1594ef', width=215, height=50, highlightthickness=0,
+                                    borderwidth=0)
+        questionNineFrame.place(x=0, y=0)
+
+        questionNineFrame2 = Listbox(questionNinePopup, bg='#0c71b9', width=190, height=21, highlightthickness=0,
+                                     borderwidth=0)
+        questionNineFrame2.place(x=0, y=75)
+
+        QuestionNineTitle = Label(questionNineFrame, text="Display those users such that each item they posted "
+                                                          "so far never\n received any \"poor\" reviews.",
+                                  font=('Arial', 14, 'bold'), bg='#2095e9')
+        QuestionNineTitle.place(x=50, y=15)
+
+        backButtonPopUp = Button(questionNineFrame, text='Back', font=("yu gothic ui bold", 12),
+                                 bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
+                                 cursor='hand2', height=2, width=20, command=lambda: exitButton())
+        backButtonPopUp.place(x=600, y=425)
+
+        connect = create_db_connection()
+        procedure_name = "Users_With_No_Poor_Items_Posted"
+        params = ()
+        returned_result = execute_query(connect, procedure_name, params)
+        questionNineDisplay = ttk.Treeview(questionNineFrame2, selectmode=BROWSE)
+        questionNineDisplay['show'] = 'headings'
+        # Define number of columns
+        questionNineDisplay['columns'] = ('userName', 'poorItemsPosted')
+
+        # Assign dimensions
+        questionNineDisplay.column("userName", width=100, minwidth=50, anchor=W)
+        questionNineDisplay.column("poorItemsPosted", width=100, minwidth=50, anchor=W)
+
+        # Assign headers to table columns
+        questionNineDisplay.heading("userName", text="userName", anchor=W)
+        questionNineDisplay.heading("poorItemsPosted", text="poorItemsPosted", anchor=W)
+
+        i = 0
+        for ro in returned_result:
+            # print(ro)
+            questionNineDisplay.insert("", i, text="", values=(ro[0], ro[1]))
+            i = i + 1
+
+        questionNineDisplay.place(x=20, y=0)
+
+    def questionTen():
+        questionTenPopup = Toplevel()
+        windowWidth = 800
+        windowHeight = 500
+        screenWidth = questionTenPopup.winfo_screenwidth()
+        screenHeight = questionTenPopup.winfo_screenheight()
+        positionTop = int(screenHeight / 4 - windowHeight / 4)
+        positionRight = int(screenWidth / 2 - windowWidth / 2)
+        questionTenPopup.geometry(f'{windowWidth}x{windowHeight}+{positionRight}+{positionTop}')
+        questionTenPopup.title('Question 10')
+        questionTenPopup.iconbitmap('Images/show.png')  ######
+        questionTenPopup.configure(background='#f8f8f8')
+        questionTenPopup.resizable(0, 0)
+
+        def exitButton():
+            questionTenPopup.destroy()
+
+        questionTenFrame = Listbox(questionTenPopup, bg='#1594ef', width=215, height=50, highlightthickness=0,
+                                   borderwidth=0)
+        questionTenFrame.place(x=0, y=0)
+
+        questionTenFrame2 = Listbox(questionTenPopup, bg='#0c71b9', width=190, height=21, highlightthickness=0,
+                                    borderwidth=0)
+        questionTenFrame2.place(x=0, y=75)
+
+        QuestionTenTitle = Label(questionTenFrame, text="List a user pair (A, B) such that they always gave each "
+                                                        "other \"excellent\" reviews\n for every single item they posted.",
+                                 font=('Arial', 14, 'bold'), bg='#2095e9')
+        QuestionTenTitle.place(x=50, y=15)
+
+        backButtonPopUp = Button(questionTenFrame, text='Back', font=("yu gothic ui bold", 12),
+                                 bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
+                                 cursor='hand2', height=2, width=20, command=lambda: exitButton())
+        backButtonPopUp.place(x=600, y=425)
+
+        connect = create_db_connection()
+        procedure_name = "Find_User_Pairs_With_Excellent_Reviews"
+        params = ()
+        returned_result = execute_query(connect, procedure_name, params)
+        questionTenDisplay = ttk.Treeview(questionTenFrame2, selectmode=BROWSE)
+        questionTenDisplay['show'] = 'headings'
+        # Define number of columns
+        questionTenDisplay['columns'] = ('User 1', 'User 2')
+
+        # Assign dimensions
+        questionTenDisplay.column("User 1", width=100, minwidth=50, anchor=W)
+        questionTenDisplay.column("User 2", width=100, minwidth=50, anchor=W)
+
+        # Assign headers to table columns
+        questionTenDisplay.heading("User 1", text="User 1", anchor=W)
+        questionTenDisplay.heading("User 2", text="User 2", anchor=W)
+
+        i = 0
+        for ro in returned_result:
+            # print(ro)
+            questionTenDisplay.insert("", i, text="", values=(ro[0], ro[1]))
+            i = i + 1
+
+        questionTenDisplay.place(x=20, y=0)
+
+    # ============== TOP BUTTON LAYOUT ====================
+    questionOneButton = Button(question, text='Question 1', font=("yu gothic ui bold", 12), bg='#f8f8f8', fg="#89898b",
+                               command=lambda: questionOne(), borderwidth=0, activebackground='#1b87d2',
+                               cursor='hand2')
+    questionOneButton.place(x=40, y=100)
+
+    questionTwoLabel = Label(question, text="Category 1", fg="#a7a7a7",
+                             font=("yu gothic ui semibold", 12), highlightthickness=2)
+    questionTwoLabel.place(x=140, y=150)
+    questionTwoCategory1 = Entry(question, fg="black", font=("yu gothic ui semibold", 12), highlightthickness=2)
+    questionTwoCategory1.place(x=250, y=150)
+
+    questionTwoLabel2 = Label(question, text="Category 2'", fg="#a7a7a7",
+                              font=("yu gothic ui semibold", 12), highlightthickness=2)
+    questionTwoLabel2.place(x=525, y=150)
+    questionTwoCategory2 = Entry(question, fg="black", font=("yu gothic ui semibold", 12), highlightthickness=2)
+    questionTwoCategory2.place(x=625, y=150)
+
+    questionTwoButton = Button(question, text='Question 2', font=("yu gothic ui bold", 12), bg='#f8f8f8', fg="#89898b",
+                               command=lambda: questionTwo(questionTwoCategory1.get(), questionTwoCategory2.get()),
+                               borderwidth=0, activebackground='#1b87d2',
+                               cursor='hand2')
+    questionTwoButton.place(x=40, y=150)
+
+    questionThreeLabel = Label(question, text="User Name:'", fg="#a7a7a7", font=("yu gothic ui semibold", 12),
+                               highlightthickness=2)
+    questionThreeLabel.place(x=140, y=200)
+    questionThreeDate = Entry(question, fg="black", font=("yu gothic ui semibold", 12), highlightthickness=2)
+    questionThreeDate.place(x=250, y=200)
+
+    questionThreeButton = Button(question, text='Question 3', font=("yu gothic ui bold", 12), bg='#f8f8f8',
+                                 fg="#89898b",
+                                 command=lambda: questionThree(questionThreeDate.get()), borderwidth=0,
+                                 activebackground='#1b87d2',
+                                 cursor='hand2')
+    questionThreeButton.place(x=40, y=200)
+
+    questionFourButton = Button(question, text='Question 4', font=("yu gothic ui bold", 12), bg='#f8f8f8', fg="#89898b",
+                                command=lambda: questionFour(questionFourDate.get()), borderwidth=0,
+                                activebackground='#1b87d2',
+                                cursor='hand2')
+    questionFourButton.place(x=40, y=250)
+
+    questionFourLabel = Label(question, text="Date format 'yyyy-mm-dd'", fg="#a7a7a7",
+                              font=("yu gothic ui semibold", 12), highlightthickness=2)
+    questionFourLabel.place(x=140, y=250)
+    questionFourDate = Entry(question, fg="black", font=("yu gothic ui semibold", 12), highlightthickness=2)
+    questionFourDate.place(x=350, y=250)
+
+    questionFiveLabel = Label(question, text="User 1", fg="#a7a7a7",
+                              font=("yu gothic ui semibold", 12), highlightthickness=2)
+    questionFiveLabel.place(x=140, y=300)
+    questionFiveUser1 = Entry(question, fg="black", font=("yu gothic ui semibold", 12), highlightthickness=2)
+    questionFiveUser1.place(x=200, y=300)
+
+    questionFiveLabel2 = Label(question, text="User 2'", fg="#a7a7a7",
+                               font=("yu gothic ui semibold", 12), highlightthickness=2)
+    questionFiveLabel2.place(x=400, y=300)
+    questionFiveUser2 = Entry(question, fg="black", font=("yu gothic ui semibold", 12), highlightthickness=2)
+    questionFiveUser2.place(x=480, y=300)
+
+    questionFiveButton = Button(question, text='Question 5', font=("yu gothic ui bold", 12), bg='#f8f8f8', fg="#89898b",
+                                command=lambda: questionFive(questionFiveUser1.get(), questionFiveUser2.get()),
+                                borderwidth=0, activebackground='#1b87d2',
+                                cursor='hand2')
+    questionFiveButton.place(x=40, y=300)
+
+    questionSixButton = Button(question, text='Question 6', font=("yu gothic ui bold", 12), bg='#f8f8f8', fg="#89898b",
+                               command=lambda: questionSix(), borderwidth=0, activebackground='#1b87d2',
+                               cursor='hand2')
+    questionSixButton.place(x=40, y=350)
+
+    questionSevenButton = Button(question, text='Question 7', font=("yu gothic ui bold", 12), bg='#f8f8f8',
+                                 fg="#89898b",
+                                 command=lambda: questionSeven(), borderwidth=0, activebackground='#1b87d2',
+                                 cursor='hand2')
+    questionSevenButton.place(x=40, y=400)
+
+    questionEightButton = Button(question, text='Question 8', font=("yu gothic ui bold", 12), bg='#f8f8f8',
+                                 fg="#89898b",
+                                 command=lambda: questionEight(), borderwidth=0, activebackground='#1b87d2',
+                                 cursor='hand2')
+    questionEightButton.place(x=40, y=450)
+
+    questionNineButton = Button(question, text='Question 9', font=("yu gothic ui bold", 12), bg='#f8f8f8', fg="#89898b",
+                                command=lambda: questionNine(), borderwidth=0, activebackground='#1b87d2',
+                                cursor='hand2')
+    questionNineButton.place(x=40, y=500)
+
+    questionTenButton = Button(question, text='Question 10', font=("yu gothic ui bold", 12), bg='#f8f8f8', fg="#89898b",
+                               command=lambda: questionTen(), borderwidth=0, activebackground='#1b87d2',
+                               cursor='hand2')
+    questionTenButton.place(x=40, y=550)
+
+    def returnToPortal():
+        reportsWindow.destroy()
+        GUI2()
+
+    backButtonPopUp = Button(question, text='Back to Portal', font=("yu gothic ui bold", 12),
+                             bg='#1b87d2', fg="#f8f8f8", borderwidth=1, activebackground='#1b87d2',
+                             cursor='hand2', height=2, width=20, command=lambda: returnToPortal())
+    backButtonPopUp.place(x=1000, y=740)
+
+    reportsWindow.mainloop()
 
 
 # Function to create a database connection
